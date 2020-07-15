@@ -2,17 +2,14 @@ import React, { useState, useEffect } from "react";
 import { useHistory, useParams } from "react-router-dom";
 import axios from "axios";
 
-const initialMovie = {
-    id: "",
-    title: "",
-    director: "",
-    metascore: "",
-    stars: []
-};
-
 const UpdateForm = props => {
     const { push } = useHistory();
-    const { movie, setMovie } = useState(initialMovie);
+    const [movie, setMovie] = useState({
+        title: "",
+        director: "",
+        metascore: "",
+        stars: []
+    });
     const { id } = useParams();
 
     useEffect(() => {
@@ -26,7 +23,6 @@ const UpdateForm = props => {
 
     const handleSubmit = e => {
         e.preventDefault();
-        e.persist();
         axios
             .put(`http://localhost:5000/api/movies/${id}`, movie)
             .then(res => {
@@ -38,10 +34,25 @@ const UpdateForm = props => {
     }
     
     const handleChanges = e => {
-        setMovie({
-            ...movie,
-            [e.target.name]: e.target.value
-        });
+        e.persist();
+        let newStars = [];
+        let value = e.target.value;
+        if(e.target.name === "stars") {
+            newStars.push(e.target.value);
+            setMovie({
+                ...movie,
+                [e.target.name]: value,
+                stars: newStars
+            })
+            } else {
+                setMovie({
+                    ...movie,
+                    [e.target.name]: value,
+                });
+            }
+        // if(e.target.name === "metascore") {
+        //     value=parseInt(value, 10);
+        // }
     };
 
     return (
